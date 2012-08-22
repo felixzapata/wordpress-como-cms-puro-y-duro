@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
+	<head>
+		<title>WordPress como CMS puro y duro</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">	
+		<link href="styles.css" rel="stylesheet" />
+	</head>
+	<body>
+		<div id="impress">
+						
+			<div class="step" data-x="0" data-y="0">
+				<div class="wysiwyg">
+					<h1>WordPress como CMS puro y duro</h1>
+					
+					<img src="img/wordpress-halo-cms.jpg" alt="" />
+					<!--img src="img/wordpress-logo.png" alt="" /-->
+					
+					
+				</div>	
+				<div class="cl twitter">
+						<span class="flt"><a href="http://twitter.com/felixzapata">@felixzapata</a></span>
+						<span class="frt"><a href="http://twitter.com/madridworpress/">@madridworpress</a> / #madridworpress</span>
+					</div>	
+				
+			</div>
+			
+			<div class="step" data-x="500" data-y="-1000">
+				<div class="wysiwyg">
+					<h2>Primero de todo, recomendar dos libros</h2>
+					<div class="cl object-center">
+						<a href="http://www.amazon.com/Professional-WordPress-Plugin-Development-Williams/dp/0470916222/ref=sr_1_1?ie=UTF8&amp;qid=1340484782&amp;sr=8-1&amp;keywords=professional+wordpress+plugin+development"><img src="img/professional-wordpress-plugin-development-238x300.jpg" alt="Professional WordPress Plugin Development" class="flt" /></a>
+						<a href="http://www.amazon.com/Smashing-WordPress-Beyond-Magazine-Series/dp/1119942713/ref=dp_ob_title_bk" class="frt"><img src="img/51zSVwwVXLL._SL500_AA240_.jpg" alt="Smashing WordPress Beyond the blog" /></a>
+					</div>	
+				</div>	
+				<div class="cl twitter">
+						<span class="flt"><a href="http://twitter.com/felixzapata">@felixzapata</a></span>
+						<span class="frt"><a href="http://twitter.com/madridworpress/">@madridwordpress</a> / #madridworpress</span>
+					</div>	
+			</div>
+			
+			<div class="step" data-x="1000" data-y="-2000">
+				<div class="wysiwyg">
+					<h2>WordPress CMS <em>checklist</em></h2>
+					<ul>
+						<li>¿Realmente necesitas un CMS para este proyecto?</li>
+						<li>¿Es WordPress la herramienta que se ajusta a tus necesidades?</li>
+						<li>¿Necesitas algo adicional en el panel de administración?</li>
+						<li>¿Necesitas personalizar completamente el panel de administración?</li>
+						<li>¿Qué estrategia vas a usar con las categorías y los tags?</li>
+						<li>¿Necesitas crear tipos de contenidos propios o te sirven los que vienen con WordPress?</li>
+						<li>¿Tienes definido el formato de los enlaces que vas usar entre las páginas?</li>
+						<li>Aquello que no viene de base con WordPress (el multiidioma por ejemplo), ¿has pensado en usar plugins o hacerlo por tu cuenta?</li>
+								
+					</ul>
+				</div>	
+				<div class="cl twitter">
+						<span class="flt"><a href="http://twitter.com/felixzapata">@felixzapata</a></span>
+						<span class="frt"><a href="http://twitter.com/madridworpress/">@madridworpress</a> / #madridworpress</span>
+					</div>	
+			</div>
+			
+			<div class="step" data-x="1500" data-y="-3000">
+				<div class="wysiwyg">
+					<h2>Modificando el panel de administración</h2>
+					 
+<pre>
+	<code>
+		/* quitar menu de entradas en el panel */
+		add_action( 'admin_menu', 'my_remove_menu_pages' );
+
+		function my_remove_menu_pages() {
+			remove_menu_page('edit.php');
+			remove_menu_page('edit-comments.php');
+			remove_menu_page('link-manager.php');
+		}
+		/* fin quitar menu de entradas en el panel */
+	</code>	
+</pre>	
+						
+				</div>	
+				<div class="cl twitter">
+						<span class="flt"><a href="http://twitter.com/felixzapata">@felixzapata</a></span>
+						<span class="frt"><a href="http://twitter.com/madridworpress/">@madridworpress</a> / #madridworpress</span>
+					</div>					
+			</div>
+			
+			<div class="step" data-x="2000" data-y="-4000">
+				<div class="wysiwyg">
+					<h2>Añadiendo campos de texto</h2>
+					
+<pre>
+	<code>
+/* módulo lateral izquierdo en páginas */
+add_action("add_meta_boxes","post_options");
+add_action("save_post","post_options_save");
+add_action("admin_print_styles-post.php","post_options_estilos");
+add_action("admin_print_styles-post-new.php","post_options_estilos");
+add_action("admin_init", "add_post_options_meta_styles");
+
+function post_options(){
+	<strong>add_meta_box("post_options","Módulo lateral izquierdo de texto", 
+	"post_options_init","page","normal","high");</strong>
+}
+
+function post_options_init($post){
+	
+	$txt = esc_html(get_post_meta($post->ID,"_txt",true)); 	
+?&gt;
+	
+	&lt;p&gt;
+	 &gt;label for="txt">Texto lateral izquierdo:&gt;/label&gt;
+	 &gt;textarea id="txt" name="txt" rows="5" cols="5"&gt;&gt;? echo $txt; ?&gt;&gt;/textarea&gt;
+	&lt;/p&gt;
+	
+&lt;? 
+}
+
+function post_options_save($post_id){
+	
+	if(isset($_POST["txt"])){
+		update_post_meta($post_id,"_txt",esc_textarea($_POST["txt"]));
+	}
+	
+}
+
+function add_post_options_meta_styles(){
+	$template_directory = get_bloginfo('template_directory');
+	wp_register_style( 'mod_lateral_meta_styles', $template_directory.'/css/post-options.css' );
+}
+
+function post_options_estilos(){
+	wp_enqueue_style("mod_lateral_meta_styles");
+}
+/* fin módulo lateral izquierdo en páginas  */
+	</code>
+</pre>							
+		
+				</div>
+				<div class="cl twitter">
+						<span class="flt"><a href="http://twitter.com/felixzapata">@felixzapata</a></span>
+						<span class="frt"><a href="http://twitter.com/madridworpress/">@madridworpress</a> / #madridworpress</span>
+					</div>	
+			</div>
+			
+			<div class="step" data-x="2500" data-y="-5000">
+				<div class="wysiwyg">
+					<h2>Añadiendo campo de textos II</h2>
+					<p><strong>add_meta_box(id, title, callback, page, context, priority, callback_args);</strong></p>
+					<ul>
+						<li><strong>id:</strong> el id que se va añadir a la capa que lo va a envolver para usarlo mediante CSS.</li>
+						<li><strong>title:</strong> el nombre de la cabecera que va a aparecer en la caja de texto</li>
+						<li><strong>callback:</strong> la función que se va a ocupar de mostrar tu caja</li>
+						<li><strong>page:</strong> en qué página va a aparecer nuestra caja</li>
+						<li><strong>context:</strong> la parte de la página donde nuestra caja aparecerá</li>
+						<li><strong>priority:</strong> la prioridad en la colocación de la caja</li>
+						<li><strong>callback_args:</strong> parámetros a pasar a nuestra función de <em>callback</em></li>
+					</ul>
+					
+				</div>
+				<div class="cl twitter">
+						<span class="flt"><a href="http://twitter.com/felixzapata">@felixzapata</a></span>
+						<span class="frt"><a href="http://twitter.com/madridworpress/">@madridworpress</a> / #madridworpress</span>
+					</div>	
+			</div>
+			
+			<div class="step" data-x="3000" data-y="-6000">
+				<div class="wysiwyg">
+					<h2>Tipos de contenidos propios</h2>
+					<p><a href="http://codex.wordpress.org/Post_Types"><em>Custom Posts Types</em></a></p>
+					<p><a href="http://wordpress.org/extend/plugins/custom-post-type-ui/"><em>Custom Post Type UI</em></a></p>
+					<pre>
+						<code>
+
+function register_post_types() {
+  $labels = array(
+    'name' => _x('Hoteles', 'post type general name'),
+    'singular_name' => _x('Hotel', 'post type singular name'),
+    'add_new' => _x('Añadir un hotel', 'hotel'),
+    'add_new_item' => __('Añadir un hotel'),
+    'edit_item' => __('Editar hotel'),
+    'new_item' => __('Nuevo hotel'),
+    'all_items' => __('Todos los hoteles'),
+    'view_item' => __('Ver hotel'),
+    'search_items' => __('Buscar hoteles'),
+    'not_found' =>  __('No se han encontrado hoteles'),
+    'not_found_in_trash' => __('No se han encontrado hoteles en la papelera'), 
+    'parent_item_colon' => '',
+    'menu_name' => 'Hoteles'
+
+  );
+
+  $args = array(
+    'labels' => $labels,
+    'public' => true,
+    'publicly_queryable' => true,
+    'show_ui' => true, 
+    'show_in_menu' => true, 
+    'query_var' => true,
+    'rewrite' => true,
+    'capability_type' => 'page',
+    'has_archive' => true, 
+    'hierarchical' => false,
+    'menu_position' => null,
+    'supports' => array( 'title', 'editor', 'thumbnail', 'page-attributes' )
+  ); 
+  register_post_type('hotel',$args);
+}
+						</code>
+					</pre>
+					
+				</div>
+				<div class="cl twitter">
+						<span class="flt"><a href="http://twitter.com/felixzapata">@felixzapata</a></span>
+						<span class="frt"><a href="http://twitter.com/madridworpress/">@madridworpress</a> / #madridworpress</span>
+					</div>	
+			</div>
+
+			<div class="step" data-x="3500" data-y="-7000">
+				<div class="wysiwyg">
+					<h2>Enlaces de interés</h2>
+					<ul>
+						<li><a href="http://delicious.com/xar/wordpress">Enlaces míos que recopilo sobre WordPress</a></li>	
+						<li><a href="http://wp.tutsplus.com/">wp tuts+</a></li>	
+						<li><a href="http://wordpress.stackexchange.com/">un Stack Overflow de WordPress</a></li>	
+						<li><a href="http://wp.smashingmagazine.com/2011/10/04/create-custom-post-meta-boxes-wordpress/">How To Create Custom Post Meta Boxes In WordPress</a></li>
+						<li><a href="http://www.advancedcustomfields.com/">Advanced Custom Fields</a></li>
+					</ul>
+				</div>
+				<div class="cl twitter">
+						<span class="flt"><a href="http://twitter.com/felixzapata">@felixzapata</a></span>
+						<span class="frt"><a href="http://twitter.com/madridwordpress/">@madridwordpress</a> / #madridwordpress</span>
+					</div>	
+			</div>
+			
+		</div>
+		<script type="text/javascript" src="impress.js"></script>
+	</body>
+</html>
